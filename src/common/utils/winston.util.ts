@@ -4,7 +4,6 @@ import * as winston from 'winston';
 import { resolve } from 'path';
 
 const logDirectory = resolve(__dirname, '..', '..', '..', 'logs');
-console.log(logDirectory);
 
 const dailyOptions = (level: string) => {
   return {
