@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { RemoveNullPropertiesMiddleware } from './middlewares/remove-null-properties.middleware';
 
 @Module({
   imports: [],
@@ -19,5 +20,6 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(RemoveNullPropertiesMiddleware).forRoutes('*');
   }
 }
