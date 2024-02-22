@@ -6,12 +6,17 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { RemoveNullPropertiesMiddleware } from './middlewares/remove-null-properties.middleware';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmConfigService } from 'typeorm.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
     }),
   ],
   controllers: [AppController],
