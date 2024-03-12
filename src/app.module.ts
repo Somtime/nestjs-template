@@ -8,6 +8,8 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { RemoveNullPropertiesMiddleware } from './middlewares/remove-null-properties.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'typeorm.config';
+import { AuthModule } from './auth/auth.module';
+import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { TypeOrmConfigService } from 'typeorm.config';
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
     }),
+    AuthModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [

@@ -15,8 +15,9 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: ['dist/**/*.entity{.ts,.js}'],
-      timezone: 'Z',
+      timezone: 'Asian/Seoul',
       synchronize: false,
+      logging: false,
       namingStrategy: new SnakeNamingStrategy(),
     };
   }
