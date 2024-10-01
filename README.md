@@ -30,4 +30,7 @@ $ npm run start:dev
 
 # init - db, host 등 기본 설정
 $ npm run init
+
+# git 커밋 템플릿 설정
+$ git config commit.template .gitmessage
 ```
