@@ -27,4 +27,7 @@ $ npm run log
 ```bash
 # start
 $ npm run start:dev
+
+# init - db, host 등 기본 설정
+$ npm run init
 ```
