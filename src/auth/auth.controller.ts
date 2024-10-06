@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
-import { CreateMemberDto } from 'src/member/dto/create-member.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -20,8 +20,8 @@ export class AuthController {
   }
 
   @Post('signUp')
-  signUp(@Body() createMemberDto: CreateMemberDto) {
-    return this.authService.signUp(createMemberDto);
+  signUp(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signUp(createUserDto);
   }
 
   @UseGuards(AuthGuard)

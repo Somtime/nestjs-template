@@ -9,7 +9,7 @@ import { RemoveNullPropertiesMiddleware } from './middlewares/remove-null-proper
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'typeorm.config';
 import { AuthModule } from './auth/auth.module';
-import { MemberModule } from './member/member.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { MemberModule } from './member/member.module';
       useClass: TypeOrmConfigService,
     }),
     AuthModule,
-    MemberModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

@@ -4,30 +4,30 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { MemberService } from 'src/member/member.service';
+import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
-import { CreateMemberDto } from 'src/member/dto/create-member.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private memberService: MemberService,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
-  async signUp(createMemberDto: CreateMemberDto) {
-    const findMember = await this.memberService.findById(createMemberDto.id);
+  async signUp(createUserDto: CreateUserDto) {
+    const findUser = await this.userService.findById(createUserDto.id);
 
-    if (findMember) throw new ForbiddenException('이미 존재하는 사용자입니다.');
-    const hashedPassword = await bcrypt.hash(createMemberDto.password, 12);
-    createMemberDto.password = hashedPassword;
+    if (findUser) throw new ForbiddenException('이미 존재하는 사용자입니다.');
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
+    createUserDto.password = hashedPassword;
 
-    const newMember = await this.memberService.create(createMemberDto);
+    const newUser = await this.userService.create(createUserDto);
 
     const payload = {
-      id: newMember.id,
-      name: newMember.name,
-      phone: newMember.phone,
+      id: newUser.id,
+      name: newUser.name,
+      phone: newUser.phone,
     };
 
     return {
@@ -36,18 +36,18 @@ export class AuthService {
   }
 
   async signIn(id: string, password: string): Promise<any> {
-    const member = await this.memberService.findById(id);
-    if (!member) throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+    const user = await this.userService.findById(id);
+    if (!user) throw new UnauthorizedException('존재하지 않는 사용자입니다.');
 
-    const isMatch = await bcrypt.compare(password, member.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch)
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
 
     const payload = {
-      id: member.id,
-      name: member.name,
-      phone: member.phone,
+      id: user.id,
+      name: user.name,
+      phone: user.phone,
     };
 
     return {

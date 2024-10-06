@@ -1,12 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CreateMemberDto {
-  @IsOptional()
-  branchIdx: number;
-
-  @IsOptional()
-  roleIdx: number;
-
+export class CreateUserDto {
   @IsNotEmpty()
   id: string;
 

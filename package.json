@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-default-setting",
+  "name": "nestjs-template",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -11,8 +11,8 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "pm2 start dist/src/main.js",
-    "stop:prod": "pm2 stop Game",
+    "start:prod": "pm2 start ./dist/src/main.js --name 'nestjs-template'",
+    "stop:prod": "pm2 stop 'nestjs-template'",
     "restart:prod": "npm run build && npm run stop:prod && npm run start:prod",
     "status:prod": "pm2 list",
     "log": "pm2 log",
