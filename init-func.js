@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const readline = require("readline");
+const readline = require('readline');
 const { stdin: input, stdout: output } = require('process');
 
 const createReadLine = () => {
   return readline.createInterface({ input, output });
-}
+};
 
 const readLineConfirm = (rl, question) => {
   return new Promise((resolve) => {
@@ -13,7 +13,7 @@ const readLineConfirm = (rl, question) => {
       resolve(answer);
     });
   });
-}
+};
 
 const createDotEnv = (data) => {
   // .env 파일에 작성할 내용
@@ -39,7 +39,7 @@ const createDotEnv = (data) => {
       console.log('.env file created successfully');
     }
   });
-}
+};
 
 const checkDotEnv = () => {
   // 현재 디렉토리에서 .env 파일 경로 설정
@@ -53,7 +53,7 @@ const checkDotEnv = () => {
     console.log('.env 파일이 존재하지 않습니다.');
     return false; // 파일이 없으면 false 반환
   }
-}
+};
 
 const updatePackageJson = (appName) => {
   // package.json 파일 경로 설정
@@ -69,6 +69,19 @@ const updatePackageJson = (appName) => {
     // JSON 파싱
     let packageJson = JSON.parse(data);
 
+    // 스크립트 수정
+    packageJson.scripts = packageJson.scripts || {};
+
+    const newScripts = {
+      "start:prod": `pm2 start ./dist/src/main.js --name '${appName}'`,
+      "stop:prod": `pm2 stop '${appName}'`,
+    }
+
+    for (let [key, value] of Object.entries(newScripts)) {
+      packageJson.scripts[key] = value;
+    }
+
+
     // appName으로 "name" 필드 수정
     packageJson.name = appName;
 
@@ -77,15 +90,20 @@ const updatePackageJson = (appName) => {
 
     // 수정된 package.json 파일 쓰기
     fs.writeFile(packageJsonPath, updatedPackageJson, 'utf8', (err) => {
-      console.log('package edit');
+      console.log('package.json');
       if (err) {
-        console.error('Error writing package.json:', err);
+        console.error('package.json 파일 수정 실패: ', err);
       } else {
-        console.log('package.json updated successfully');
+        console.log('package.json 파일 수정 완료');
       }
     });
   });
 };
 
-
-module.exports = { createReadLine, readLineConfirm, createDotEnv, checkDotEnv, updatePackageJson }
+module.exports = {
+  createReadLine,
+  readLineConfirm,
+  createDotEnv,
+  checkDotEnv,
+  updatePackageJson,
+};
