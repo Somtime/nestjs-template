@@ -1,20 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { UserService } from 'src/user/user.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { User } from 'src/user/entities/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from 'src/user/user.module';
-import { ConfigModule } from '@nestjs/config';
+import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 import { jwtConstants } from './constants';
 import { faker } from '@faker-js/faker';
 import { UnauthorizedException } from '@nestjs/common';
-import { TypeOrmMysqlConfig } from 'src/common/databases/mysql.config';
+import { UserRepository } from './user.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { User } from './entities/user.entity';
+import { TypeOrmConfigMysql } from 'src/common/databases/TypeOrmConfigMysql';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let userService: UserService;
+  let dataSource: DataSource;
+  let queryRunner: QueryRunner;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,25 +24,30 @@ describe('AuthService', () => {
           cache: true,
           isGlobal: true,
         }),
-        TypeOrmMysqlConfig([User]),
-        TypeOrmModule.forFeature([User]),
-        UserModule,
+        TypeOrmModule.forRoot(new TypeOrmConfigMysql([User])),
         JwtModule.register({
           global: true,
           secret: jwtConstants.secret,
           signOptions: { expiresIn: '60s' },
         }),
       ],
-      providers: [AuthService, UserService],
+      providers: [AuthService, UserRepository, User],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userService = module.get<UserService>(UserService);
+    dataSource = module.get<DataSource>(DataSource);
+    queryRunner = dataSource.createQueryRunner();
+    queryRunner.connect();
+    queryRunner.startTransaction();
+  });
+
+  afterAll(async () => {
+    await queryRunner.rollbackTransaction();
+    await queryRunner.release();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(userService).toBeDefined();
   });
 
   describe('회원가입/로그인', () => {
@@ -54,14 +60,13 @@ describe('AuthService', () => {
       signUpUser.password = password;
       signUpUser.name = faker.internet.userName();
       signUpUser.phone = faker.phone.number();
-      const jwtToken = await service.signUp(signUpUser);
+      const jwtToken = await service.signUp(queryRunner.manager, signUpUser);
 
-      const newUser = new JwtService().decode(jwtToken.access_token);
-      const findUser = await userService.findById(newUser.id);
+      const createdUser = new JwtService().decode(jwtToken.access_token);
 
-      expect(findUser.id).toEqual(signUpUser.id);
-      expect(findUser.name).toEqual(signUpUser.name);
-      expect(findUser.phone).toEqual(signUpUser.phone);
+      expect(createdUser.id).toEqual(signUpUser.id);
+      expect(createdUser.name).toEqual(signUpUser.name);
+      expect(createdUser.phone).toEqual(signUpUser.phone);
     });
 
     it('signUp() Duplication User', async () => {
@@ -72,7 +77,7 @@ describe('AuthService', () => {
       signUpUser.phone = faker.phone.number();
 
       await expect(
-        async () => await service.signUp(signUpUser),
+        async () => await service.signUp(queryRunner.manager, signUpUser),
       ).rejects.toThrow(
         new UnauthorizedException('이미 존재하는 사용자입니다.'),
       );
@@ -84,7 +89,11 @@ describe('AuthService', () => {
       signUpUser.password = password;
       signUpUser.phone = faker.phone.number();
 
-      const signInUser = await service.signIn(id, password);
+      const signInUser = await service.signIn(
+        queryRunner.manager,
+        id,
+        password,
+      );
       const token = new JwtService().decode(signInUser.access_token);
 
       expect(token.id).toBe(id);
@@ -93,7 +102,11 @@ describe('AuthService', () => {
     it('signIn() Not Exist User', async () => {
       await expect(
         async () =>
-          await service.signIn(faker.string.uuid(), faker.internet.password()),
+          await service.signIn(
+            queryRunner.manager,
+            faker.string.uuid(),
+            faker.internet.password(),
+          ),
       ).rejects.toThrow(
         new UnauthorizedException('존재하지 않는 사용자입니다.'),
       );
@@ -101,7 +114,12 @@ describe('AuthService', () => {
 
     it('signIn() Not Equal Password', async () => {
       await expect(
-        async () => await service.signIn(id, faker.internet.password()),
+        async () =>
+          await service.signIn(
+            queryRunner.manager,
+            id,
+            faker.internet.password(),
+          ),
       ).rejects.toThrow(
         new UnauthorizedException('비밀번호가 일치하지 않습니다.'),
       );

@@ -30,7 +30,6 @@ export class TransactionInterceptor implements NestInterceptor {
         await queryRunner.release();
 
         if (e instanceof HttpException) {
-          console.log(e.getResponse());
           throw new HttpException(e.getResponse(), e.getStatus());
         }
         throw new InternalServerErrorException(e.message, e.code);

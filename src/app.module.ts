@@ -7,9 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { RemoveNullPropertiesMiddleware } from './middlewares/remove-null-properties.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmConfigService } from 'typeorm.config';
+import { TypeOrmConfig } from 'typeorm.config';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -17,11 +16,8 @@ import { UserModule } from './user/user.module';
       cache: true,
       isGlobal: true,
     }),
-    TypeOrmModule.forRootAsync({
-      useClass: TypeOrmConfigService,
-    }),
+    TypeOrmModule.forRoot(new TypeOrmConfig()),
     AuthModule,
-    UserModule,
   ],
   controllers: [AppController],
   providers: [
