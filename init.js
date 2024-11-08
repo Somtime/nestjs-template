@@ -2,15 +2,13 @@ const { createReadLine, readLineConfirm, createDotEnv, checkDotEnv, updatePackag
 
 const main = async () => {
   const readLine = createReadLine();
-
   const envFile = checkDotEnv();
+  let envFileCreate = true;
 
   if (envFile) {
-    const confirmExistEnv = await readLineConfirm(readLine, '이미 설정된 env 파일이 존재합니다. 더 이상 진행 시 해당 파일이 손상될 수 있습니다. 계속해서 진행하시겠습니까? (Y/N): ');
+    const confirmExistEnv = await readLineConfirm(readLine, '이미 설정된 env 파일이 존재합니다. 더 이상 진행 시 해당 파일이 손상될 수 있습니다. env 파일을 생성하시겠습니까? (Y/N): ');
     if (confirmExistEnv.toLowerCase() !== 'y' && confirmExistEnv.toLowerCase() !== 'yes') {
-      console.log('종료하였습니다.');
-      readLine.close();
-      return;
+      envFileCreate = false;
     }
   }
 
@@ -25,12 +23,12 @@ const main = async () => {
   const dbUser = await readLineConfirm(readLine, '유저를 입력해주세요: ');
   const dbPassword = await readLineConfirm(readLine, '비밀번호를 입력해주세요: ');
 
-  const appName = await readLineConfirm(readLine, '앱 이름을 입력해주세요: (dev)');
-  const appHost = await readLineConfirm(readLine, '서버 host을 입력해주세요: (127.0.0.1)');
-  const appPort = await readLineConfirm(readLine, '사용할 port를 입력해주세요: (3000)');
+  const appName = await readLineConfirm(readLine, '앱 이름을 입력해주세요: (dev)') || 'dev';
+  const appPort = await readLineConfirm(readLine, '사용할 port를 입력해주세요: (3000)') || 3000;
+  const appHost = await readLineConfirm(readLine, '서버 host을 입력해주세요: (127.0.0.1)') || `http://127.0.0.1:${appPort}/` ;
 
-  const dbHost = await readLineConfirm(readLine, '데이터베이스 host을 입력해주세요: (127.0.0.1)');
-  const dbPort = await readLineConfirm(readLine, '데이터베이스 port를 입력해주세요: (3306)');
+  const dbHost = await readLineConfirm(readLine, '데이터베이스 host을 입력해주세요: (127.0.0.1)') || '127.0.0.1';
+  const dbPort = await readLineConfirm(readLine, '데이터베이스 port를 입력해주세요: (3306)') || 3306;
 
   readLine.close();
 
@@ -38,7 +36,7 @@ const main = async () => {
     dbName, dbUser, dbPassword, appName, appHost, appPort, dbHost, dbPort
   }
 
-  createDotEnv(data);
+  if (envFileCreate) createDotEnv(data);
   updatePackageJson(appName);
 }
 main();
