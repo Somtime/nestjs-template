@@ -26,6 +26,8 @@ const createDotEnv = (data) => {
       DB_USERNAME=${data.dbUser}
       DB_PASSWORD=${data.dbPassword || '127.0.0.1'}
       DB_PORT=${data.dbPort || 3306}
+      JWT_SECRET=${data.jwtSecret || 'jwt-secret-key'}
+      BCRYPT_SECRET=${data.bcryptSecret || 'bcrypt-secret-key'}
   `;
 
   // .env 파일을 저장할 경로 설정
@@ -73,14 +75,13 @@ const updatePackageJson = (appName) => {
     packageJson.scripts = packageJson.scripts || {};
 
     const newScripts = {
-      "start:prod": `pm2 start ./dist/src/main.js --name '${appName}'`,
-      "stop:prod": `pm2 stop '${appName}'`,
-    }
+      'start:prod': `pm2 start ./dist/src/main.js --name '${appName}'`,
+      'stop:prod': `pm2 stop '${appName}'`,
+    };
 
     for (let [key, value] of Object.entries(newScripts)) {
       packageJson.scripts[key] = value;
     }
-
 
     // appName으로 "name" 필드 수정
     packageJson.name = appName;
