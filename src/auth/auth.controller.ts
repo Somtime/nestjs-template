@@ -9,6 +9,8 @@ import {
   UseGuards,
   Param,
   UseInterceptors,
+  Inject,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
@@ -21,6 +23,8 @@ import { EntityManager } from 'typeorm';
 @UseInterceptors(TransactionInterceptor)
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(this.constructor.name);
+
   constructor(private readonly authService: AuthService) {}
 
   @Post('signIn')

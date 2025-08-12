@@ -1,10 +1,10 @@
-import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { WinstonLogger } from './common/utils/winston.util';
+
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
+import { WinstonLogger } from './loggers/winston.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
