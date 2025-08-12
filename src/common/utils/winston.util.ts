@@ -23,7 +23,7 @@ export const WinstonLogger = WinstonModule.createLogger({
       level: 'http',
       format: winston.format.combine(
         winston.format.timestamp(),
-        utilities.format.nestLike('Game', {
+        utilities.format.nestLike(process.env.APP_NAME, {
           colors: true,
           prettyPrint: true,
         }),
