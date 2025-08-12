@@ -8,7 +8,7 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { RemoveNullPropertiesMiddleware } from './middlewares/remove-null-properties.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfig } from 'typeorm.config';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './api/auth/auth.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 
 @Module({
