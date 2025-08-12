@@ -19,6 +19,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { TransactionInterceptor } from 'src/interceptors/transaction.interceptor';
 import { TransactionManager } from 'src/decorators/transaction.decorator';
 import { EntityManager } from 'typeorm';
+import { User, UserToken } from 'src/decorators/user.decorator';
 
 @UseInterceptors(TransactionInterceptor)
 @Controller('auth')
@@ -49,8 +50,8 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get('profile')
-  getProfile(@Request() req): any {
-    return req.user;
+  getProfile(@User() user: UserToken): UserToken {
+    return user;
   }
 
   @Patch(':id')
