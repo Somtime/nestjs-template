@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Request,
   Get,
   Post,
   Patch,
@@ -9,7 +8,6 @@ import {
   UseGuards,
   Param,
   UseInterceptors,
-  Inject,
   Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -31,10 +29,10 @@ export class AuthController {
   @Post('signIn')
   signIn(
     @Body() signInDto: Record<string, any>,
-    @TransactionManager() TransactionManager: EntityManager,
+    @TransactionManager() transactionManager: EntityManager,
   ) {
     return this.authService.signIn(
-      TransactionManager,
+      transactionManager,
       signInDto.id,
       signInDto.password,
     );
@@ -43,9 +41,9 @@ export class AuthController {
   @Post('signUp')
   signUp(
     @Body() createUserDto: CreateUserDto,
-    @TransactionManager() TransactionManager: EntityManager,
+    @TransactionManager() transactionManager: EntityManager,
   ) {
-    return this.authService.signUp(TransactionManager, createUserDto);
+    return this.authService.signUp(transactionManager, createUserDto);
   }
 
   @UseGuards(AuthGuard)
@@ -58,16 +56,16 @@ export class AuthController {
   update(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
-    @TransactionManager() TransactionManager: EntityManager,
+    @TransactionManager() transactionManager: EntityManager,
   ) {
-    return this.authService.update(TransactionManager, +id, updateUserDto);
+    return this.authService.update(transactionManager, +id, updateUserDto);
   }
 
   @Delete(':id')
   remove(
     @Param('id') id: number,
-    @TransactionManager() TransactionManager: EntityManager,
+    @TransactionManager() transactionManager: EntityManager,
   ) {
-    return this.authService.remove(TransactionManager, +id);
+    return this.authService.remove(transactionManager, +id);
   }
 }

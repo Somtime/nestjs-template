@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
-import { jwtConstants } from './constants';
 import { faker } from '@faker-js/faker';
 import { UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
@@ -27,7 +26,7 @@ describe('AuthService', () => {
         TypeOrmModule.forRoot(new TypeOrmConfig([User])),
         JwtModule.register({
           global: true,
-          secret: jwtConstants.secret,
+          secret: 'jwt-secret-key',
           signOptions: { expiresIn: '60s' },
         }),
       ],
@@ -54,7 +53,7 @@ describe('AuthService', () => {
     const id = faker.string.uuid();
     const password = faker.internet.password();
 
-    it('signUp()', async () => {
+    it('회원가입', async () => {
       const signUpUser = new CreateUserDto();
       signUpUser.id = id;
       signUpUser.password = password;
@@ -69,7 +68,7 @@ describe('AuthService', () => {
       expect(createdUser.phone).toEqual(signUpUser.phone);
     });
 
-    it('signUp() Duplication User', async () => {
+    it('회원가입 중복 예외 처리', async () => {
       const signUpUser = new CreateUserDto();
       signUpUser.id = id;
       signUpUser.password = password;
@@ -83,7 +82,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('signIn()', async () => {
+    it('로그인 성공', async () => {
       const signUpUser = new CreateUserDto();
       signUpUser.id = id;
       signUpUser.password = password;
@@ -99,7 +98,7 @@ describe('AuthService', () => {
       expect(token.id).toBe(id);
     });
 
-    it('signIn() Not Exist User', async () => {
+    it('아이디 불일치 예외 처리', async () => {
       await expect(
         async () =>
           await service.signIn(
@@ -112,7 +111,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('signIn() Not Equal Password', async () => {
+    it('비밀번호 불일치 예외 처리', async () => {
       await expect(
         async () =>
           await service.signIn(
