@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './entities/user.entity';
-import { TypeOrmConfigMysql } from 'src/common/databases/TypeOrmConfigMysql';
+import { TypeOrmConfig } from 'typeorm.config';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -24,7 +24,7 @@ describe('AuthService', () => {
           cache: true,
           isGlobal: true,
         }),
-        TypeOrmModule.forRoot(new TypeOrmConfigMysql([User])),
+        TypeOrmModule.forRoot(new TypeOrmConfig([User])),
         JwtModule.register({
           global: true,
           secret: jwtConstants.secret,

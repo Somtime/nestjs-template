@@ -15,14 +15,14 @@ export class TypeOrmConfig {
   logging: boolean;
   namingStrategy: SnakeNamingStrategy;
 
-  constructor() {
+  constructor(entities: any[] = ['dist/**/*.entity{.ts,.js}']) {
     this.type = 'mysql';
     this.host = process.env.DB_HOSTNAME;
     this.port = +process.env.DB_PORT;
     this.username = process.env.DB_USERNAME;
     this.password = process.env.DB_PASSWORD;
     this.database = process.env.DB_DATABASE;
-    this.entities = ['dist/**/*.entity{.ts,.js}'];
+    this.entities = entities;
     this.timezone = 'Asia/Seoul';
     this.synchronize = false;
     this.logging = false;
